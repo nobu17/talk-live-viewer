@@ -1,0 +1,54 @@
+import { Radio } from "lucide-react";
+import React from "react";
+import { RemoteImage } from "../../../components/RemoteImage";
+import type { TalkEvent } from "../types";
+import { getEventSummary, shouldCollapseSummary } from "../utils/summary";
+
+type EventCardProps = {
+  event: TalkEvent;
+};
+
+export function EventCard({ event }: EventCardProps) {
+  const [expanded, setExpanded] = React.useState(false);
+  const people = event.performers.slice(0, 4).join(" / ");
+  const summary = getEventSummary(event);
+  const hasExpandableSummary = shouldCollapseSummary(summary);
+  const streamingLabel = event.isStreaming === true ? "配信あり" : event.isStreaming === false ? "配信なし" : "配信不明";
+  const streamingClassName =
+    event.isStreaming === true ? "badge live" : event.isStreaming === false ? "badge muted" : "badge unknown";
+
+  return (
+    <article className="event-card">
+      {event.imageUrl ? <RemoteImage className="thumb" src={event.imageUrl} alt="" /> : <NoImageThumb />}
+      <div className="event-body">
+        <div className="meta-row">
+          <span>{event.venueName}</span>
+          <span className={streamingClassName}>
+            <Radio size={14} />
+            {streamingLabel}
+          </span>
+        </div>
+        <h2>
+          <a href={event.detailUrl ?? event.sourceUrl} target="_blank" rel="noreferrer">
+            {event.title}
+          </a>
+        </h2>
+        {summary && <p className={expanded ? "event-summary expanded" : "event-summary"}>{summary}</p>}
+        {hasExpandableSummary && (
+          <button className="summary-toggle" type="button" onClick={() => setExpanded((value) => !value)}>
+            {expanded ? "閉じる" : "もっと見る"}
+          </button>
+        )}
+        {people && <p className="performers">{people}</p>}
+      </div>
+    </article>
+  );
+}
+
+function NoImageThumb() {
+  return (
+    <div className="thumb no-image-thumb" aria-hidden="true">
+      <span>No Image</span>
+    </div>
+  );
+}
