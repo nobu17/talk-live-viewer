@@ -85,13 +85,14 @@ async function main() {
 export function buildMonthUrls(
   baseScheduleUrl: string,
   months = 5,
-  start = addMonths(new Date(), -1),
+  start = addMonths(tokyoToday(), -1),
   provider: "loft" | "lateral" | "bookandbeer" | "dommune" | "pundit" = "loft",
 ) {
   const urls: string[] = [];
   const base = new URL(baseScheduleUrl);
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
+  const current = addMonths(start, 1);
+  const currentMonth = current.getMonth();
+  const currentYear = current.getFullYear();
   for (let offset = 0; offset < months; offset += 1) {
     const date = new Date(start.getFullYear(), start.getMonth() + offset, 1);
     const url = new URL(base.toString());
@@ -124,6 +125,19 @@ export function buildMonthUrls(
 
 function addMonths(value: Date, offset: number) {
   return new Date(value.getFullYear(), value.getMonth() + offset, 1);
+}
+
+function tokyoToday() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const year = Number(parts.find((part) => part.type === "year")?.value);
+  const month = Number(parts.find((part) => part.type === "month")?.value);
+  const day = Number(parts.find((part) => part.type === "day")?.value);
+  return new Date(year, month - 1, day);
 }
 
 async function fetchText(url: string) {

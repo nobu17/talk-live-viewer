@@ -47,6 +47,7 @@ This repository is a static React app for browsing talk live event schedules acr
 - Keep generated data shape compatible with `src/features/events/types.ts`.
 - Keep generated `public/data/*.json` out of Git. Actions should generate them before `npm run build`, and Vite will copy them into the Pages artifact.
 - Preserve the no-backend assumption: browser code should read `./data/*.json`, not scrape source pages directly.
+- GitHub Actions runs in UTC. Date/month logic for fetching schedules should use explicit Japan/Tokyo dates or timezone-independent test dates; avoid ISO strings with `+09:00` in tests when asserting local month behavior.
 - Use `venue.provider` when adding non-LOFT sources. Add a provider-specific parser instead of forcing unrelated HTML into the LOFT parser.
 - DOMMUNE uses the top page as its schedule source. Its teaser links include the year in `/streamings/YYYY/...`, and recent archive entries are filtered to the app's past-14-day window during data generation to avoid keeping old archives in JSON.
 - Pundit uses a Shopify collection as its schedule source. The fetcher requests several collection pages with `?page=N`; the parser reads the date from product titles and enriches events from product details.

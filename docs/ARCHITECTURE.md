@@ -93,9 +93,10 @@ Lateral Osaka, Honya B&B, and Pundit use separate parsers. They may not expose t
 
 ## GitHub Actions
 
-- `deploy-pages.yml` installs dependencies, runs `npm run fetch:events`, tests, builds, and deploys `dist/`.
+- `deploy-pages.yml` installs dependencies, runs tests, fetches event data, builds, and deploys `dist/`.
 - It runs on manual dispatch and scheduled refreshes.
 - The scheduled refresh is Tuesday/Thursday/Sunday 27:00 JST, represented as Monday/Wednesday/Saturday 18:00 UTC in GitHub Actions cron.
+- Tests run before event fetching, so test failures stop the workflow before external scraping work begins.
 - Generated `public/data/*.json` should not be committed. Vite copies the generated files into `dist/data/`, and that build artifact is what GitHub Pages serves.
 - A separate data update workflow is optional, but it should deploy a fresh artifact rather than commit generated JSON unless the project intentionally wants data history in Git.
 

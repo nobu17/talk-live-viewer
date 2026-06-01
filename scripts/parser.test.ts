@@ -136,7 +136,7 @@ describe("parser", () => {
   });
 
   it("builds the previous month, current month, and three future months by default", () => {
-    expect(buildMonthUrls(venue.scheduleUrl, 5, new Date("2026-04-01T00:00:00+09:00"))).toEqual([
+    expect(buildMonthUrls(venue.scheduleUrl, 5, new Date(2026, 3, 1))).toEqual([
       "https://www.loft-prj.co.jp/schedule/plusone/schedule?schedulemonth=4&scheduleyear=2026",
       "https://www.loft-prj.co.jp/schedule/plusone/schedule?schedulemonth=5&scheduleyear=2026",
       "https://www.loft-prj.co.jp/schedule/plusone/schedule?schedulemonth=6&scheduleyear=2026",
@@ -146,7 +146,7 @@ describe("parser", () => {
   });
 
   it("builds only the DOMMUNE top page URL", () => {
-    expect(buildMonthUrls("https://www.dommune.com/", 5, new Date("2026-04-01T00:00:00+09:00"), "dommune")).toEqual([
+    expect(buildMonthUrls("https://www.dommune.com/", 5, new Date(2026, 3, 1), "dommune")).toEqual([
       "https://www.dommune.com/",
     ]);
   });
@@ -221,7 +221,7 @@ describe("parser", () => {
       buildMonthUrls(
         "https://pundit.jp/collections/p1%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88",
         3,
-        new Date("2026-04-01T00:00:00+09:00"),
+        new Date(2026, 3, 1),
         "pundit",
       ),
     ).toEqual([

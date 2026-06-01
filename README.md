@@ -70,9 +70,10 @@ For GitHub Pages, the intended flow is:
 
 1. GitHub Actions checks out the repository.
 2. Actions runs `npm ci`.
-3. Actions runs `npm run fetch:events`.
-4. Actions runs `npm test` and `npm run build`.
-5. The generated JSON is copied into `dist/data/` by Vite and published as part of the Pages artifact.
+3. Actions runs `npm test`.
+4. Actions runs `npm run fetch:events`.
+5. Actions runs `npm run build`.
+6. The generated JSON is copied into `dist/data/` by Vite and published as part of the Pages artifact.
 
 Do not commit generated `events.json`, `venues.json`, `fetch-log.json`, or `fetch-errors.json` unless the project intentionally changes to a data-history-in-Git workflow.
 
@@ -83,6 +84,7 @@ The Pages workflow is `.github/workflows/deploy-pages.yml`.
 - It runs on `main` pushes, manual `workflow_dispatch`, and scheduled refreshes.
 - It runs manually with `workflow_dispatch` and on scheduled refreshes.
 - The scheduled refresh is Tuesday/Thursday/Sunday 27:00 JST, which is Wednesday/Friday/Monday 03:00 JST and Monday/Wednesday/Saturday 18:00 UTC in GitHub Actions cron.
+- It runs tests before fetching event data, so test failures do not waste external scraping work.
 - It generates event data during the workflow before building.
 - It deploys the built `dist/` artifact using GitHub Pages Actions.
 - `vite.config.ts` derives the Pages base path from the repository name on GitHub Actions. Set `VITE_BASE` only if the deployment path needs to be overridden.
