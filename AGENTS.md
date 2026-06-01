@@ -17,7 +17,7 @@ This repository is a static React app for browsing talk live event schedules acr
 - Routing: hash-based routing implemented in `src/features/events/hooks/useHashRoute.ts`.
 - Data source: static JSON files under `public/data/`.
 - Data generation: Node/TypeScript scripts under `scripts/`.
-- Deployment: GitHub Actions workflows under `.github/workflows/`.
+- Deployment: GitHub Actions workflow under `.github/workflows/deploy-pages.yml`.
 - Generated JSON under `public/data/*.json` is ignored by Git and should be produced before local builds or inside the Pages deploy workflow.
 
 ## Important Files
@@ -27,6 +27,7 @@ This repository is a static React app for browsing talk live event schedules acr
 - `src/components/`: shared UI components.
 - `src/features/events/`: event feature code, including components, hooks, utils, and types.
 - `src/styles.css`: global styling for the SPA.
+- `vite.config.ts`: Vite config. GitHub Actions derives the Pages base path from the repository name unless `VITE_BASE` is set.
 - `scripts/fetch-events.ts`: fetches source pages and writes generated JSON.
 - `scripts/parser.ts`: parses LOFT schedule/detail HTML.
 - `scripts/lateral-parser.ts`: parses Lateral Osaka schedule/detail HTML.

@@ -76,6 +76,17 @@ For GitHub Pages, the intended flow is:
 
 Do not commit generated `events.json`, `venues.json`, `fetch-log.json`, or `fetch-errors.json` unless the project intentionally changes to a data-history-in-Git workflow.
 
+## GitHub Pages
+
+The Pages workflow is `.github/workflows/deploy-pages.yml`.
+
+- It runs on `main` pushes, manual `workflow_dispatch`, and scheduled refreshes.
+- It runs manually with `workflow_dispatch` and on scheduled refreshes.
+- The scheduled refresh is Tuesday/Thursday/Sunday 27:00 JST, which is Wednesday/Friday/Monday 03:00 JST and Monday/Wednesday/Saturday 18:00 UTC in GitHub Actions cron.
+- It generates event data during the workflow before building.
+- It deploys the built `dist/` artifact using GitHub Pages Actions.
+- `vite.config.ts` derives the Pages base path from the repository name on GitHub Actions. Set `VITE_BASE` only if the deployment path needs to be overridden.
+
 ## Notes for AI Agents
 
 Read `AGENTS.md` first. It contains the working assumptions, file ownership, and verification commands for this repository.
