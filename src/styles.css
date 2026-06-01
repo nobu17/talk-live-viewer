@@ -164,6 +164,23 @@ select {
   background: #ded8ce;
 }
 
+.thumb-link {
+  display: block;
+  width: 132px;
+  min-height: 100%;
+  background: #ded8ce;
+}
+
+.thumb-link:hover .thumb,
+.thumb-link:focus-visible .thumb {
+  filter: brightness(0.96);
+}
+
+.thumb-link:focus-visible {
+  outline: 3px solid #202124;
+  outline-offset: -3px;
+}
+
 .no-image-thumb {
   display: grid;
   place-items: center;
@@ -450,6 +467,10 @@ select {
   .thumb {
     width: 96px;
   }
+
+  .thumb-link {
+    width: 96px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -460,5 +481,9 @@ select {
   .thumb {
     width: 100%;
     height: 180px;
+  }
+
+  .thumb-link {
+    width: 100%;
   }
 }

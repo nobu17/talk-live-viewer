@@ -13,13 +13,16 @@ export function EventCard({ event }: EventCardProps) {
   const people = event.performers.slice(0, 4).join(" / ");
   const summary = getEventSummary(event);
   const hasExpandableSummary = shouldCollapseSummary(summary);
+  const officialUrl = event.detailUrl ?? event.sourceUrl;
   const streamingLabel = event.isStreaming === true ? "配信あり" : event.isStreaming === false ? "配信なし" : "配信不明";
   const streamingClassName =
     event.isStreaming === true ? "badge live" : event.isStreaming === false ? "badge muted" : "badge unknown";
 
   return (
     <article className="event-card">
-      {event.imageUrl ? <RemoteImage className="thumb" src={event.imageUrl} alt="" /> : <NoImageThumb />}
+      <a className="thumb-link" href={officialUrl} target="_blank" rel="noreferrer" aria-label={`${event.title} 公式ページ`}>
+        {event.imageUrl ? <RemoteImage className="thumb" src={event.imageUrl} alt="" /> : <NoImageThumb />}
+      </a>
       <div className="event-body">
         <div className="meta-row">
           <span>{event.venueName}</span>
@@ -29,7 +32,7 @@ export function EventCard({ event }: EventCardProps) {
           </span>
         </div>
         <h2>
-          <a href={event.detailUrl ?? event.sourceUrl} target="_blank" rel="noreferrer">
+          <a href={officialUrl} target="_blank" rel="noreferrer">
             {event.title}
           </a>
         </h2>
