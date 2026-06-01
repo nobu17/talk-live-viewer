@@ -27,7 +27,36 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
-      - run: npm run fetch:events
+      - name: Backup currently published data
+        continue-on-error: true
+        run: |
+          mkdir -p .fallback-data
+          base_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/data"
+          for file in events.json venues.json fetch-log.json fetch-errors.json; do
+            curl --fail --silent --show-error --location "$base_url/$file" --output ".fallback-data/$file"
+          done
+      - name: Fetch event data
+        id: fetch_events
+        continue-on-error: true
+        run: npm run fetch:events
+      - name: Validate generated data
+        id: validate_generated_data
+        if: steps.fetch_events.outcome == 'success'
+        continue-on-error: true
+        run: npm run validate:data
+      - name: Restore previous data when refresh fails
+        if: steps.fetch_events.outcome == 'failure' || steps.validate_generated_data.outcome == 'failure'
+        run: |
+          if [ -f .fallback-data/events.json ] && [ -f .fallback-data/venues.json ]; then
+            mkdir -p public/data
+            cp .fallback-data/*.json public/data/
+            echo "Restored previously published data."
+          else
+            echo "::error::Event refresh failed and no previously published data is available."
+            exit 1
+          fi
+      - name: Validate deploy data
+        run: npm run validate:data
       - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

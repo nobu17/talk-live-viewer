@@ -62,6 +62,7 @@ This repository is a static React app for browsing talk live event schedules acr
 - Build: `npm run build`
 - Run tests: `npm test`
 - Refresh generated event data: `npm run fetch:events`
+- Validate generated event data: `npm run validate:data`
 
 On Windows PowerShell, use `npm.cmd` if `npm` is blocked by execution policy.
 
@@ -78,4 +79,5 @@ Run this after scraper/parser changes:
 
 ```sh
 npm run fetch:events
+npm run validate:data
 ```
