@@ -23,7 +23,7 @@ export function parseDommuneSchedulePage(html: string, venue: Venue, fetchedAt: 
   const $ = cheerio.load(html);
   const stubs: EventStub[] = [];
   const seen = new Set<string>();
-  const cutoffDate = archiveCutoffDate();
+  const cutoffDate = archiveCutoffDate(fetchedAt);
 
   $("article.ScheduleTeaser").each((_, element) => {
     const item = $(element);
@@ -184,14 +184,29 @@ function collectDommuneLinks($: cheerio.CheerioAPI) {
     .slice(0, 12);
 }
 
-function archiveCutoffDate() {
-  const today = new Date();
+function archiveCutoffDate(reference: string) {
+  const today = tokyoDate(reference);
   const cutoff = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 14);
   return [
     String(cutoff.getFullYear()),
     String(cutoff.getMonth() + 1).padStart(2, "0"),
     String(cutoff.getDate()).padStart(2, "0"),
   ].join("-");
+}
+
+function tokyoDate(reference: string) {
+  const date = new Date(reference);
+  const source = Number.isNaN(date.getTime()) ? new Date() : date;
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(source);
+  const year = Number(parts.find((part) => part.type === "year")?.value);
+  const month = Number(parts.find((part) => part.type === "month")?.value);
+  const day = Number(parts.find((part) => part.type === "day")?.value);
+  return new Date(year, month - 1, day);
 }
 
 function absoluteUrl(value: string) {

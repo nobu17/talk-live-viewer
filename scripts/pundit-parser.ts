@@ -9,7 +9,7 @@ export function parsePunditSchedulePage(html: string, venue: Venue, fetchedAt: s
   const $ = cheerio.load(html);
   const stubs: EventStub[] = [];
   const seen = new Set<string>();
-  const { minDate, maxDate } = relevantDateRange();
+  const { minDate, maxDate } = relevantDateRange(fetchedAt);
 
   $("li.grid__item, .product-card-wrapper").each((_, element) => {
     const item = $(element);
@@ -277,11 +277,26 @@ function htmlToText(value: string) {
   return normalizeLines($.text());
 }
 
-function relevantDateRange() {
-  const today = new Date();
+function relevantDateRange(reference: string) {
+  const today = tokyoDate(reference);
   const min = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 14);
   const max = new Date(today.getFullYear(), today.getMonth() + 4, today.getDate());
   return { minDate: formatDate(min), maxDate: formatDate(max) };
+}
+
+function tokyoDate(reference: string) {
+  const date = new Date(reference);
+  const source = Number.isNaN(date.getTime()) ? new Date() : date;
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Tokyo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(source);
+  const year = Number(parts.find((part) => part.type === "year")?.value);
+  const month = Number(parts.find((part) => part.type === "month")?.value);
+  const day = Number(parts.find((part) => part.type === "day")?.value);
+  return new Date(year, month - 1, day);
 }
 
 function formatDate(value: Date) {
