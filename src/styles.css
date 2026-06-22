@@ -111,6 +111,42 @@ select {
   font: inherit;
 }
 
+.segmented-control {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 40px;
+  overflow: hidden;
+  border: 1px solid #b9b0a4;
+  border-radius: 6px;
+  background: #fffaf2;
+}
+
+.segmented-control button {
+  min-width: 0;
+  border: 0;
+  border-right: 1px solid #b9b0a4;
+  background: transparent;
+  color: #4c4740;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.segmented-control button:last-child {
+  border-right: 0;
+}
+
+.segmented-control button.active {
+  background: #202124;
+  color: #fffaf2;
+}
+
+.segmented-control button:focus-visible,
+.favorite-button:focus-visible {
+  outline: 3px solid #202124;
+  outline-offset: 2px;
+}
+
 .day-list {
   display: grid;
   gap: 26px;
@@ -208,6 +244,31 @@ select {
   gap: 8px;
   font-size: 0.86rem;
   font-weight: 700;
+}
+
+.favorite-button {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  margin-left: auto;
+  padding: 0;
+  border: 1px solid #cfc6ba;
+  border-radius: 999px;
+  background: #fffaf2;
+  color: #7a5728;
+  cursor: pointer;
+}
+
+.favorite-button[aria-pressed="true"] {
+  border-color: #d8a327;
+  background: #fff4c8;
+  color: #8a6200;
+}
+
+.favorite-button:hover {
+  filter: brightness(0.97);
 }
 
 .badge {
@@ -330,6 +391,21 @@ select {
 
 .detail-content {
   min-width: 0;
+}
+
+.detail-heading-row {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+}
+
+.detail-heading-row .eyebrow {
+  flex: 1 1 auto;
+}
+
+.detail-favorite-button {
+  width: 40px;
+  height: 40px;
 }
 
 .detail-content h1 {

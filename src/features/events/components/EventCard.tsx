@@ -1,4 +1,4 @@
-import { Radio } from "lucide-react";
+import { Radio, Star } from "lucide-react";
 import React from "react";
 import { RemoteImage } from "../../../components/RemoteImage";
 import type { TalkEvent } from "../types";
@@ -6,9 +6,11 @@ import { getEventSummary, shouldCollapseSummary } from "../utils/summary";
 
 type EventCardProps = {
   event: TalkEvent;
+  isFavorite: boolean;
+  onToggleFavorite: (event: TalkEvent) => void;
 };
 
-export function EventCard({ event }: EventCardProps) {
+export function EventCard({ event, isFavorite, onToggleFavorite }: EventCardProps) {
   const [expanded, setExpanded] = React.useState(false);
   const people = event.performers.slice(0, 4).join(" / ");
   const summary = getEventSummary(event);
@@ -30,6 +32,16 @@ export function EventCard({ event }: EventCardProps) {
             <Radio size={14} />
             {streamingLabel}
           </span>
+          <button
+            className="favorite-button"
+            type="button"
+            aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            aria-pressed={isFavorite}
+            title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            onClick={() => onToggleFavorite(event)}
+          >
+            <Star size={17} fill={isFavorite ? "currentColor" : "none"} />
+          </button>
         </div>
         <h2>
           <a href={officialUrl} target="_blank" rel="noreferrer">

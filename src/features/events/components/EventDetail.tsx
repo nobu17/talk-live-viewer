@@ -1,4 +1,4 @@
-import { ExternalLink, Ticket } from "lucide-react";
+import { ExternalLink, Star, Ticket } from "lucide-react";
 import { RemoteImage } from "../../../components/RemoteImage";
 import type { TalkEvent } from "../types";
 import { dateFormatter } from "../utils/date";
@@ -6,9 +6,11 @@ import { dateFormatter } from "../utils/date";
 type EventDetailProps = {
   event: TalkEvent;
   onBack: () => void;
+  isFavorite: boolean;
+  onToggleFavorite: (event: TalkEvent) => void;
 };
 
-export function EventDetail({ event, onBack }: EventDetailProps) {
+export function EventDetail({ event, onBack, isFavorite, onToggleFavorite }: EventDetailProps) {
   return (
     <main className="detail-shell">
       <button className="back-button" type="button" onClick={onBack}>
@@ -17,7 +19,19 @@ export function EventDetail({ event, onBack }: EventDetailProps) {
       <article className="detail-layout">
         <RemoteImage className="detail-image" src={event.imageUrl} alt="" />
         <div className="detail-content">
-          <p className="eyebrow">{event.venueName}</p>
+          <div className="detail-heading-row">
+            <p className="eyebrow">{event.venueName}</p>
+            <button
+              className="favorite-button detail-favorite-button"
+              type="button"
+              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              aria-pressed={isFavorite}
+              title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              onClick={() => onToggleFavorite(event)}
+            >
+              <Star size={20} fill={isFavorite ? "currentColor" : "none"} />
+            </button>
+          </div>
           <h1>{event.title}</h1>
           <div className="detail-meta">
             <span>{dateFormatter.format(new Date(`${event.date}T00:00:00`))}</span>

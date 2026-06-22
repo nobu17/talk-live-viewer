@@ -5,9 +5,11 @@ import { EventCard } from "./EventCard";
 type DaySectionProps = {
   date: string;
   events: TalkEvent[];
+  isFavorite: (id: string) => boolean;
+  onToggleFavorite: (event: TalkEvent) => void;
 };
 
-export function DaySection({ date, events }: DaySectionProps) {
+export function DaySection({ date, events, isFavorite, onToggleFavorite }: DaySectionProps) {
   return (
     <section className="day-section">
       <div className="date-rail">
@@ -16,7 +18,12 @@ export function DaySection({ date, events }: DaySectionProps) {
       </div>
       <div className="event-list">
         {events.map((event) => (
-          <EventCard key={event.id} event={event} />
+          <EventCard
+            key={event.id}
+            event={event}
+            isFavorite={isFavorite(event.id)}
+            onToggleFavorite={onToggleFavorite}
+          />
         ))}
       </div>
     </section>
