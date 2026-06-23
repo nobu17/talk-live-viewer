@@ -2,6 +2,13 @@ name: Deploy GitHub Pages
 
 on:
   workflow_dispatch:
+    inputs:
+      refresh_data:
+        description: "Refresh event data before deploy"
+        type: boolean
+        default: true
+  push:
+    branches: [main]
   schedule:
     # Tuesday/Thursday/Sunday 27:00 JST = Wednesday/Friday/Monday 03:00 JST.
     # GitHub Actions cron is UTC, so this runs Monday/Wednesday/Saturday 18:00 UTC.
@@ -35,17 +42,29 @@ jobs:
           for file in events.json venues.json fetch-log.json fetch-errors.json; do
             curl --fail --silent --show-error --location "$base_url/$file" --output ".fallback-data/$file"
           done
+      - name: Use currently published data
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && !inputs.refresh_data)
+        run: |
+          if [ -f .fallback-data/events.json ] && [ -f .fallback-data/venues.json ]; then
+            mkdir -p public/data
+            cp .fallback-data/*.json public/data/
+            echo "Using currently published data."
+          else
+            echo "::error::No currently published data is available. Run with refresh_data=true."
+            exit 1
+          fi
       - name: Fetch event data
         id: fetch_events
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.refresh_data)
         continue-on-error: true
         run: npm run fetch:events
       - name: Validate generated data
         id: validate_generated_data
-        if: steps.fetch_events.outcome == 'success'
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.refresh_data && steps.fetch_events.outcome == 'success')
         continue-on-error: true
         run: npm run validate:data
       - name: Restore previous data when refresh fails
-        if: steps.fetch_events.outcome == 'failure' || steps.validate_generated_data.outcome == 'failure'
+        if: (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.refresh_data)) && (steps.fetch_events.outcome == 'failure' || steps.validate_generated_data.outcome == 'failure')
         run: |
           if [ -f .fallback-data/events.json ] && [ -f .fallback-data/venues.json ]; then
             mkdir -p public/data
