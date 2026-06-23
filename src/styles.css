@@ -59,11 +59,22 @@ h1 {
   white-space: nowrap;
 }
 
+.view-toolbar {
+  display: grid;
+  grid-template-columns: minmax(280px, 420px) minmax(220px, max-content);
+  justify-content: space-between;
+  align-items: start;
+  gap: 16px;
+  margin: 22px 0 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #d6d1ca;
+}
+
 .filter-bar {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 16px;
-  margin: 22px 0 26px;
+  margin: 0 0 26px;
 }
 
 .controls {
@@ -155,6 +166,13 @@ select {
   min-width: 0;
 }
 
+.favorite-share-buttons {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  min-width: 0;
+}
+
 .favorite-share-actions button {
   display: inline-flex;
   align-items: center;
@@ -170,6 +188,12 @@ select {
   font: inherit;
   font-weight: 800;
   cursor: pointer;
+}
+
+.favorite-share-actions .danger-button {
+  border-color: #c7a5a0;
+  color: #8a3328;
+  background: #fff4f2;
 }
 
 .favorite-share-actions button:disabled {
@@ -568,6 +592,11 @@ select {
     white-space: normal;
   }
 
+  .view-toolbar {
+    grid-template-columns: 1fr;
+    margin-top: 18px;
+  }
+
   .controls {
     align-items: stretch;
     grid-template-columns: 1fr;
@@ -576,6 +605,10 @@ select {
 
   .filter-bar {
     grid-template-columns: 1fr;
+  }
+
+  .favorite-share-buttons {
+    grid-template-columns: 1fr 1fr;
   }
 
   .month-pager {

@@ -9,7 +9,7 @@ type FavoriteViewFilterProps = {
 export function FavoriteViewFilter({ value, favoriteCount, onChange }: FavoriteViewFilterProps) {
   return (
     <section className="controls" aria-label="favorite view filter">
-      <label>View</label>
+      <label>表示</label>
       <div className="segmented-control">
         <button
           type="button"
@@ -17,7 +17,7 @@ export function FavoriteViewFilter({ value, favoriteCount, onChange }: FavoriteV
           aria-pressed={value === "all"}
           onClick={() => onChange("all")}
         >
-          All
+          すべて
         </button>
         <button
           type="button"
@@ -25,7 +25,7 @@ export function FavoriteViewFilter({ value, favoriteCount, onChange }: FavoriteV
           aria-pressed={value === "favorites"}
           onClick={() => onChange("favorites")}
         >
-          Favorites {favoriteCount}
+          お気に入り {favoriteCount}
         </button>
       </div>
     </section>

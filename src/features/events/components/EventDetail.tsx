@@ -24,9 +24,9 @@ export function EventDetail({ event, onBack, isFavorite, onToggleFavorite }: Eve
             <button
               className="favorite-button detail-favorite-button"
               type="button"
-              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              aria-label={isFavorite ? "お気に入りから削除" : "お気に入りに追加"}
               aria-pressed={isFavorite}
-              title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              title={isFavorite ? "お気に入りから削除" : "お気に入りに追加"}
               onClick={() => onToggleFavorite(event)}
             >
               <Star size={20} fill={isFavorite ? "currentColor" : "none"} />

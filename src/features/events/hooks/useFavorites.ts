@@ -31,6 +31,9 @@ export function useFavorites(events: TalkEvent[]) {
   const toggleFavorite = React.useCallback((event: TalkEvent) => {
     setSnapshots((current) => toggleFavoriteSnapshot(current, event));
   }, []);
+  const clearFavorites = React.useCallback(() => {
+    setSnapshots([]);
+  }, []);
   const importFavoritesFromHash = React.useCallback((hash: string) => {
     const incoming = parseFavoriteShareHash(hash);
     if (incoming.length === 0) {
@@ -46,6 +49,7 @@ export function useFavorites(events: TalkEvent[]) {
     shareUrl,
     isFavorite,
     toggleFavorite,
+    clearFavorites,
     importFavoritesFromHash,
   };
 }

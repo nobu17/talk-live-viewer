@@ -19,7 +19,7 @@ import { getAvailableMonths } from "../features/events/utils/months";
 export function App() {
   const { events, venues, status } = useEventData();
   const { selectedEventId, goToList } = useHashRoute();
-  const { favoriteEvents, favoriteCount, shareUrl, isFavorite, toggleFavorite, importFavoritesFromHash } =
+  const { favoriteEvents, favoriteCount, shareUrl, isFavorite, toggleFavorite, clearFavorites, importFavoritesFromHash } =
     useFavorites(events);
   const [venueId, setVenueId] = React.useState("all");
   const [monthId, setMonthId] = React.useState("all");
@@ -83,16 +83,23 @@ export function App() {
   return (
     <main className="app-shell">
       <AppHeader fetchedAt={events[0]?.fetchedAt} />
-      <div className="filter-bar">
+      <div className="view-toolbar">
         <FavoriteViewFilter value={viewMode} favoriteCount={favoriteCount} onChange={setViewMode} />
-        <FavoriteShare shareUrl={shareUrl} disabled={favoriteCount === 0} />
+        <FavoriteShare
+          shareUrl={shareUrl}
+          disabled={favoriteCount === 0}
+          favoriteCount={favoriteCount}
+          onClear={clearFavorites}
+        />
+      </div>
+      <div className="filter-bar">
         <VenueFilter venues={venues} value={venueId} onChange={setVenueId} />
         <MonthFilter months={monthOptions} value={monthId} onChange={changeMonth} />
         <PastEventFilter checked={hidePastEvents} onChange={setHidePastEvents} />
       </div>
       {favoriteImportCount > 0 && (
         <div className="notice" role="status">
-          Imported {favoriteImportCount} favorites.
+          お気に入りを{favoriteImportCount}件インポートしました。
         </div>
       )}
 
@@ -101,7 +108,7 @@ export function App() {
         <EmptyState title="Could not load data" body="Check that the generated JSON files are available." />
       )}
       {status === "ready" && groupedEvents.length === 0 && viewMode === "favorites" && (
-        <EmptyState title="No favorites yet" body="Use the star button on an event to keep it here." />
+        <EmptyState title="お気に入りはまだありません" body="イベントの星ボタンでここに保存できます。" />
       )}
       {status === "ready" && groupedEvents.length === 0 && viewMode === "all" && (
         <EmptyState title="No events in range" body="Try another venue filter or update the generated data." />
