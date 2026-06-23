@@ -142,9 +142,70 @@ select {
 }
 
 .segmented-control button:focus-visible,
-.favorite-button:focus-visible {
+.favorite-button:focus-visible,
+.favorite-share-actions button:focus-visible,
+.share-url-field input:focus-visible {
   outline: 3px solid #202124;
   outline-offset: 2px;
+}
+
+.favorite-share-actions {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.favorite-share-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #b9b0a4;
+  border-radius: 6px;
+  background: #fffaf2;
+  color: #202124;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.favorite-share-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.share-url-field {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: #5d5f61;
+}
+
+.share-url-field input {
+  min-width: 0;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 1px solid #b9b0a4;
+  border-radius: 6px;
+  background: #fffdf8;
+  color: #202124;
+  font: inherit;
+  font-size: 0.82rem;
+}
+
+.notice {
+  margin: -8px 0 22px;
+  padding: 10px 12px;
+  border: 1px solid #9bc1b0;
+  border-radius: 6px;
+  background: #e8f5ee;
+  color: #286449;
+  font-weight: 800;
 }
 
 .day-list {

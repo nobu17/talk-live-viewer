@@ -1,6 +1,7 @@
 import React from "react";
 import { AppHeader } from "../components/AppHeader";
 import { EmptyState } from "../components/EmptyState";
+import { FavoriteShare } from "../components/FavoriteShare";
 import { FavoriteViewFilter } from "../components/FavoriteViewFilter";
 import { MonthFilter } from "../components/MonthFilter";
 import { MonthPager } from "../components/MonthPager";
@@ -18,11 +19,13 @@ import { getAvailableMonths } from "../features/events/utils/months";
 export function App() {
   const { events, venues, status } = useEventData();
   const { selectedEventId, goToList } = useHashRoute();
-  const { favoriteEvents, favoriteCount, isFavorite, toggleFavorite } = useFavorites(events);
+  const { favoriteEvents, favoriteCount, shareUrl, isFavorite, toggleFavorite, importFavoritesFromHash } =
+    useFavorites(events);
   const [venueId, setVenueId] = React.useState("all");
   const [monthId, setMonthId] = React.useState("all");
   const [hidePastEvents, setHidePastEvents] = React.useState(false);
   const [viewMode, setViewMode] = React.useState<"all" | "favorites">("all");
+  const [favoriteImportCount, setFavoriteImportCount] = React.useState(0);
 
   const changeMonth = React.useCallback((nextMonthId: string) => {
     setMonthId(nextMonthId);
@@ -50,6 +53,22 @@ export function App() {
     }
   }, [monthId, monthOptions]);
 
+  React.useEffect(() => {
+    const importFromHash = () => {
+      const importedCount = importFavoritesFromHash(window.location.hash);
+      if (importedCount === 0) {
+        return;
+      }
+      setFavoriteImportCount(importedCount);
+      setViewMode("favorites");
+      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}#/`);
+    };
+
+    importFromHash();
+    window.addEventListener("hashchange", importFromHash);
+    return () => window.removeEventListener("hashchange", importFromHash);
+  }, [importFavoritesFromHash]);
+
   if (selectedEvent) {
     return (
       <EventDetail
@@ -66,10 +85,16 @@ export function App() {
       <AppHeader fetchedAt={events[0]?.fetchedAt} />
       <div className="filter-bar">
         <FavoriteViewFilter value={viewMode} favoriteCount={favoriteCount} onChange={setViewMode} />
+        <FavoriteShare shareUrl={shareUrl} disabled={favoriteCount === 0} />
         <VenueFilter venues={venues} value={venueId} onChange={setVenueId} />
         <MonthFilter months={monthOptions} value={monthId} onChange={changeMonth} />
         <PastEventFilter checked={hidePastEvents} onChange={setHidePastEvents} />
       </div>
+      {favoriteImportCount > 0 && (
+        <div className="notice" role="status">
+          Imported {favoriteImportCount} favorites.
+        </div>
+      )}
 
       {status === "loading" && <EmptyState title="Loading" body="Fetching generated event data." />}
       {status === "error" && (
