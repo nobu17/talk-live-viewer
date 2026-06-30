@@ -57,6 +57,10 @@ jobs:
         id: fetch_events
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.refresh_data)
         continue-on-error: true
+        env:
+          PREVIOUS_EVENTS_PATH: .fallback-data/events.json
+          FETCH_REQUEST_DELAY_MS: 1000
+          FETCH_MAX_RETRIES: 3
         run: npm run fetch:events
       - name: Validate generated data
         id: validate_generated_data
