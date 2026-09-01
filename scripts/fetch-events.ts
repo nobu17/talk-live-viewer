@@ -15,6 +15,7 @@ const requestDelayMs = readNonNegativeInteger("FETCH_REQUEST_DELAY_MS", 1_000);
 const maxFetchRetries = readNonNegativeInteger("FETCH_MAX_RETRIES", 3);
 const retryBaseDelayMs = readNonNegativeInteger("FETCH_RETRY_BASE_DELAY_MS", 2_000);
 const lastRequestStartedAt = new Map<string, number>();
+const venueIdFilter = parseVenueIdFilter(process.env.FETCH_VENUE_IDS);
 
 type FetchError = {
   venueId: string;
@@ -29,8 +30,25 @@ async function main() {
   const retainedEventIds = new Set<string>();
   const previousEvents = await readPreviousEvents(process.env.PREVIOUS_EVENTS_PATH);
   const previousEventsById = new Map(previousEvents.map((event) => [event.id, event]));
+  const targetVenues = venueIdFilter ? venues.filter((venue) => venueIdFilter.has(venue.id)) : venues;
 
-  for (const venue of venues) {
+  if (venueIdFilter) {
+    const unknownVenueIds = [...venueIdFilter].filter((venueId) => !venues.some((venue) => venue.id === venueId));
+    if (unknownVenueIds.length > 0) {
+      throw new Error(`Unknown venue id(s): ${unknownVenueIds.join(", ")}`);
+    }
+    if (previousEvents.length === 0) {
+      throw new Error("FETCH_VENUE_IDS requires previous events data to avoid dropping untouched venues.");
+    }
+
+    for (const event of previousEvents.filter((event) => !venueIdFilter.has(event.venueId))) {
+      retainedEvents.push(event);
+      retainedEventIds.add(event.id);
+    }
+    console.log(`Refreshing ${targetVenues.map((venue) => venue.id).join(", ")}; retaining untouched venues.`);
+  }
+
+  for (const venue of targetVenues) {
     const monthUrls = buildMonthUrls(venue.scheduleUrl, 5, undefined, venue.provider);
     const failedSourceUrls = new Set<string>();
     for (const sourceUrl of monthUrls) {
@@ -306,6 +324,11 @@ function wait(milliseconds: number) {
 function readNonNegativeInteger(name: string, fallback: number) {
   const value = Number(process.env[name]);
   return Number.isInteger(value) && value >= 0 ? value : fallback;
+}
+
+function parseVenueIdFilter(value: string | undefined) {
+  const ids = value?.split(",").map((part) => part.trim()).filter(Boolean);
+  return ids && ids.length > 0 ? new Set(ids) : undefined;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
