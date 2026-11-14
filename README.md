@@ -94,6 +94,16 @@ The Pages workflow is `.github/workflows/deploy-pages.yml`.
 - It deploys the built `dist/` artifact using GitHub Pages Actions.
 - `vite.config.ts` derives the Pages base path from the repository name on GitHub Actions. Set `VITE_BASE` only if the deployment path needs to be overridden.
 
+## Scheduled Workflow Keepalive
+
+GitHub automatically disables scheduled workflows in public repositories after 60 days without repository activity. `.github/workflows/keepalive.yml` checks the default branch daily at 04:23 JST and creates a commit only when its latest commit is at least 30 days old. The commit records a UTC timestamp in `.github/keepalive.txt`; normal development commits postpone it.
+
+The keepalive workflow uses the built-in `GITHUB_TOKEN` with `contents: write`. It needs permission to push directly to the default branch; branch protection or repository rules can block this push. It does not force-push or bypass those rules. A concurrent push can also cause a safe rejection; the next daily run checks again. Check workflow failures if keepalive commits are not being created.
+
+Pushes made with `GITHUB_TOKEN` do not trigger the Pages push workflow. Event data continues to refresh through the existing deployment schedule, independently of keepalive commits.
+
+After merging, run **Keep scheduled workflows active** manually on the default branch to check access and execution (recent commits result in a successful no-op). This no-op does not verify push permissions; check branch rules separately. If **Deploy GitHub Pages** is already disabled, enable it in the Actions UI and run it with `refresh_data=true` to restore fresh data. The keepalive workflow prevents inactivity but cannot recover itself if its own schedule has already been disabled.
+
 ## Notes for AI Agents
 
 Read `AGENTS.md` first. It contains the working assumptions, file ownership, and verification commands for this repository.

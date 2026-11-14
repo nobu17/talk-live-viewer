@@ -1,0 +1,47 @@
+name: Keep scheduled workflows active
+
+on:
+  schedule:
+    # Check daily at 04:23 JST (19:23 UTC).
+    - cron: "23 19 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repository-keepalive
+  cancel-in-progress: false
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    # Keep manual runs on other branches from updating the default branch.
+    if: github.ref_name == github.event.repository.default_branch
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - name: Commit only after 30 days without commits
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --ff-only origin "$DEFAULT_BRANCH"
+          last_commit=$(git log -1 --format=%ct)
+          now=$(date -u +%s)
+          threshold=$((30 * 24 * 60 * 60))
+
+          if (( now - last_commit < threshold )); then
+            echo "Recent commit found; no keepalive commit needed." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/keepalive.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- .github/keepalive.txt
+          git commit -m "chore: keep scheduled workflows active"
+          git push origin "HEAD:refs/heads/$DEFAULT_BRANCH"
+          echo "Created a keepalive commit after 30 days without commits." >> "$GITHUB_STEP_SUMMARY"
